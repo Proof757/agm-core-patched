@@ -22,31 +22,51 @@ var MarkerManager = (function () {
         });
     };
     MarkerManager.prototype.updateMarkerPosition = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setPosition({ lat: marker.latitude, lng: marker.longitude }); });
+        return this._markers
+            .get(marker)
+            .then(function (m) {
+            return m.setPosition({ lat: marker.latitude, lng: marker.longitude });
+        });
     };
     MarkerManager.prototype.updateTitle = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setTitle(marker.title); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setTitle(marker.title); });
     };
     MarkerManager.prototype.updateLabel = function (marker) {
-        return this._markers.get(marker).then(function (m) { m.setLabel(marker.label); });
+        return this._markers.get(marker).then(function (m) {
+            m.setLabel(marker.label);
+        });
     };
     MarkerManager.prototype.updateDraggable = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setDraggable(marker.draggable); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setDraggable(marker.draggable); });
     };
     MarkerManager.prototype.updateIcon = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setIcon(marker.iconUrl); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setIcon(marker.iconUrl); });
     };
     MarkerManager.prototype.updateOpacity = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setOpacity(marker.opacity); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setOpacity(marker.opacity); });
     };
     MarkerManager.prototype.updateVisible = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setVisible(marker.visible); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setVisible(marker.visible); });
     };
     MarkerManager.prototype.updateZIndex = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setZIndex(marker.zIndex); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setZIndex(marker.zIndex); });
     };
     MarkerManager.prototype.updateClickable = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setClickable(marker.clickable); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setClickable(marker.clickable); });
     };
     MarkerManager.prototype.updateAnimation = function (marker) {
         return this._markers.get(marker).then(function (m) {
@@ -68,8 +88,11 @@ var MarkerManager = (function () {
             visible: marker.visible,
             zIndex: marker.zIndex,
             title: marker.title,
+            optimized: marker.optimized,
             clickable: marker.clickable,
-            animation: (typeof marker.animation === 'string') ? google.maps.Animation[marker.animation] : marker.animation
+            animation: typeof marker.animation === 'string'
+                ? google.maps.Animation[marker.animation]
+                : marker.animation
         });
         this._markers.set(marker, markerPromise);
     };
@@ -80,7 +103,9 @@ var MarkerManager = (function () {
         var _this = this;
         return Observable.create(function (observer) {
             _this._markers.get(marker).then(function (m) {
-                m.addListener(eventName, function (e) { return _this._zone.run(function () { return observer.next(e); }); });
+                m.addListener(eventName, function (e) {
+                    return _this._zone.run(function () { return observer.next(e); });
+                });
             });
         });
     };

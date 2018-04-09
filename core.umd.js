@@ -324,31 +324,51 @@ var MarkerManager = (function () {
         });
     };
     MarkerManager.prototype.updateMarkerPosition = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setPosition({ lat: marker.latitude, lng: marker.longitude }); });
+        return this._markers
+            .get(marker)
+            .then(function (m) {
+            return m.setPosition({ lat: marker.latitude, lng: marker.longitude });
+        });
     };
     MarkerManager.prototype.updateTitle = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setTitle(marker.title); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setTitle(marker.title); });
     };
     MarkerManager.prototype.updateLabel = function (marker) {
-        return this._markers.get(marker).then(function (m) { m.setLabel(marker.label); });
+        return this._markers.get(marker).then(function (m) {
+            m.setLabel(marker.label);
+        });
     };
     MarkerManager.prototype.updateDraggable = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setDraggable(marker.draggable); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setDraggable(marker.draggable); });
     };
     MarkerManager.prototype.updateIcon = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setIcon(marker.iconUrl); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setIcon(marker.iconUrl); });
     };
     MarkerManager.prototype.updateOpacity = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setOpacity(marker.opacity); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setOpacity(marker.opacity); });
     };
     MarkerManager.prototype.updateVisible = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setVisible(marker.visible); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setVisible(marker.visible); });
     };
     MarkerManager.prototype.updateZIndex = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setZIndex(marker.zIndex); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setZIndex(marker.zIndex); });
     };
     MarkerManager.prototype.updateClickable = function (marker) {
-        return this._markers.get(marker).then(function (m) { return m.setClickable(marker.clickable); });
+        return this._markers
+            .get(marker)
+            .then(function (m) { return m.setClickable(marker.clickable); });
     };
     MarkerManager.prototype.updateAnimation = function (marker) {
         return this._markers.get(marker).then(function (m) {
@@ -370,8 +390,11 @@ var MarkerManager = (function () {
             visible: marker.visible,
             zIndex: marker.zIndex,
             title: marker.title,
+            optimized: marker.optimized,
             clickable: marker.clickable,
-            animation: (typeof marker.animation === 'string') ? google.maps.Animation[marker.animation] : marker.animation
+            animation: typeof marker.animation === 'string'
+                ? google.maps.Animation[marker.animation]
+                : marker.animation
         });
         this._markers.set(marker, markerPromise);
     };
@@ -382,7 +405,9 @@ var MarkerManager = (function () {
         var _this = this;
         return rxjs_Observable.Observable.create(function (observer) {
             _this._markers.get(marker).then(function (m) {
-                m.addListener(eventName, function (e) { return _this._zone.run(function () { return observer.next(e); }); });
+                m.addListener(eventName, function (e) {
+                    return _this._zone.run(function () { return observer.next(e); });
+                });
             });
         });
     };
@@ -2008,6 +2033,11 @@ var AgmMarker = (function () {
          */
         this.zIndex = 1;
         /**
+         * Marker optimize flag. If it is false then it prevent dublicate rendering.
+         * Default it is true
+         */
+        this.optimized = true;
+        /**
          * If true, the marker can be clicked. Default value is true.
          */
         // tslint:disable-next-line:no-input-rename
@@ -2053,7 +2083,8 @@ var AgmMarker = (function () {
     };
     /** @internal */
     AgmMarker.prototype.ngOnChanges = function (changes) {
-        if (typeof this.latitude !== 'number' || typeof this.longitude !== 'number') {
+        if (typeof this.latitude !== 'number' ||
+            typeof this.longitude !== 'number') {
             return;
         }
         if (!this._markerAddedToManger) {
@@ -2095,33 +2126,48 @@ var AgmMarker = (function () {
     };
     AgmMarker.prototype._addEventListeners = function () {
         var _this = this;
-        var cs = this._markerManager.createEventObservable('click', this).subscribe(function () {
+        var cs = this._markerManager
+            .createEventObservable('click', this)
+            .subscribe(function () {
             if (_this.openInfoWindow) {
                 _this.infoWindow.forEach(function (infoWindow) { return infoWindow.open(); });
             }
             _this.markerClick.emit(null);
         });
         this._observableSubscriptions.push(cs);
-        var ds = this._markerManager.createEventObservable('dragend', this)
+        var ds = this._markerManager
+            .createEventObservable('dragend', this)
             .subscribe(function (e) {
-            _this.dragEnd.emit({ coords: { lat: e.latLng.lat(), lng: e.latLng.lng() } });
+            _this.dragEnd.emit({
+                coords: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+            });
         });
         this._observableSubscriptions.push(ds);
-        var mover = this._markerManager.createEventObservable('mouseover', this)
+        var mover = this._markerManager
+            .createEventObservable('mouseover', this)
             .subscribe(function (e) {
-            _this.mouseOver.emit({ coords: { lat: e.latLng.lat(), lng: e.latLng.lng() } });
+            _this.mouseOver.emit({
+                coords: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+            });
         });
         this._observableSubscriptions.push(mover);
-        var mout = this._markerManager.createEventObservable('mouseout', this)
+        var mout = this._markerManager
+            .createEventObservable('mouseout', this)
             .subscribe(function (e) {
-            _this.mouseOut.emit({ coords: { lat: e.latLng.lat(), lng: e.latLng.lng() } });
+            _this.mouseOut.emit({
+                coords: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+            });
         });
         this._observableSubscriptions.push(mout);
     };
     /** @internal */
-    AgmMarker.prototype.id = function () { return this._id; };
+    AgmMarker.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
-    AgmMarker.prototype.toString = function () { return 'AgmMarker-' + this._id.toString(); };
+    AgmMarker.prototype.toString = function () {
+        return 'AgmMarker-' + this._id.toString();
+    };
     /** @internal */
     AgmMarker.prototype.ngOnDestroy = function () {
         this._markerManager.deleteMarker(this);
@@ -2134,8 +2180,17 @@ AgmMarker.decorators = [
     { type: _angular_core.Directive, args: [{
                 selector: 'agm-marker',
                 inputs: [
-                    'latitude', 'longitude', 'title', 'label', 'draggable: markerDraggable', 'iconUrl',
-                    'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation'
+                    'latitude',
+                    'longitude',
+                    'title',
+                    'label',
+                    'draggable: markerDraggable',
+                    'iconUrl',
+                    'openInfoWindow',
+                    'opacity',
+                    'visible',
+                    'zIndex',
+                    'animation'
                 ],
                 outputs: ['markerClick', 'dragEnd', 'mouseOver', 'mouseOut']
             },] },
@@ -2155,6 +2210,7 @@ AgmMarker.propDecorators = {
     'openInfoWindow': [{ type: _angular_core.Input },],
     'opacity': [{ type: _angular_core.Input },],
     'zIndex': [{ type: _angular_core.Input },],
+    'optimized': [{ type: _angular_core.Input },],
     'clickable': [{ type: _angular_core.Input, args: ['markerClickable',] },],
     'markerClick': [{ type: _angular_core.Output },],
     'dragEnd': [{ type: _angular_core.Output },],

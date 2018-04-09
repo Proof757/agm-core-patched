@@ -53,6 +53,11 @@ var AgmMarker = (function () {
          */
         this.zIndex = 1;
         /**
+         * Marker optimize flag. If it is false then it prevent dublicate rendering.
+         * Default it is true
+         */
+        this.optimized = true;
+        /**
          * If true, the marker can be clicked. Default value is true.
          */
         // tslint:disable-next-line:no-input-rename
@@ -98,7 +103,8 @@ var AgmMarker = (function () {
     };
     /** @internal */
     AgmMarker.prototype.ngOnChanges = function (changes) {
-        if (typeof this.latitude !== 'number' || typeof this.longitude !== 'number') {
+        if (typeof this.latitude !== 'number' ||
+            typeof this.longitude !== 'number') {
             return;
         }
         if (!this._markerAddedToManger) {
@@ -140,33 +146,48 @@ var AgmMarker = (function () {
     };
     AgmMarker.prototype._addEventListeners = function () {
         var _this = this;
-        var cs = this._markerManager.createEventObservable('click', this).subscribe(function () {
+        var cs = this._markerManager
+            .createEventObservable('click', this)
+            .subscribe(function () {
             if (_this.openInfoWindow) {
                 _this.infoWindow.forEach(function (infoWindow) { return infoWindow.open(); });
             }
             _this.markerClick.emit(null);
         });
         this._observableSubscriptions.push(cs);
-        var ds = this._markerManager.createEventObservable('dragend', this)
+        var ds = this._markerManager
+            .createEventObservable('dragend', this)
             .subscribe(function (e) {
-            _this.dragEnd.emit({ coords: { lat: e.latLng.lat(), lng: e.latLng.lng() } });
+            _this.dragEnd.emit({
+                coords: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+            });
         });
         this._observableSubscriptions.push(ds);
-        var mover = this._markerManager.createEventObservable('mouseover', this)
+        var mover = this._markerManager
+            .createEventObservable('mouseover', this)
             .subscribe(function (e) {
-            _this.mouseOver.emit({ coords: { lat: e.latLng.lat(), lng: e.latLng.lng() } });
+            _this.mouseOver.emit({
+                coords: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+            });
         });
         this._observableSubscriptions.push(mover);
-        var mout = this._markerManager.createEventObservable('mouseout', this)
+        var mout = this._markerManager
+            .createEventObservable('mouseout', this)
             .subscribe(function (e) {
-            _this.mouseOut.emit({ coords: { lat: e.latLng.lat(), lng: e.latLng.lng() } });
+            _this.mouseOut.emit({
+                coords: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+            });
         });
         this._observableSubscriptions.push(mout);
     };
     /** @internal */
-    AgmMarker.prototype.id = function () { return this._id; };
+    AgmMarker.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
-    AgmMarker.prototype.toString = function () { return 'AgmMarker-' + this._id.toString(); };
+    AgmMarker.prototype.toString = function () {
+        return 'AgmMarker-' + this._id.toString();
+    };
     /** @internal */
     AgmMarker.prototype.ngOnDestroy = function () {
         this._markerManager.deleteMarker(this);
@@ -180,8 +201,17 @@ AgmMarker.decorators = [
     { type: Directive, args: [{
                 selector: 'agm-marker',
                 inputs: [
-                    'latitude', 'longitude', 'title', 'label', 'draggable: markerDraggable', 'iconUrl',
-                    'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation'
+                    'latitude',
+                    'longitude',
+                    'title',
+                    'label',
+                    'draggable: markerDraggable',
+                    'iconUrl',
+                    'openInfoWindow',
+                    'opacity',
+                    'visible',
+                    'zIndex',
+                    'animation'
                 ],
                 outputs: ['markerClick', 'dragEnd', 'mouseOver', 'mouseOut']
             },] },
@@ -201,6 +231,7 @@ AgmMarker.propDecorators = {
     'openInfoWindow': [{ type: Input },],
     'opacity': [{ type: Input },],
     'zIndex': [{ type: Input },],
+    'optimized': [{ type: Input },],
     'clickable': [{ type: Input, args: ['markerClickable',] },],
     'markerClick': [{ type: Output },],
     'dragEnd': [{ type: Output },],

@@ -47,6 +47,7 @@ export interface MarkerOptions {
     opacity?: number;
     visible?: boolean;
     zIndex?: number;
+    optimized?: boolean;
     clickable: boolean;
     animation?: any;
 }

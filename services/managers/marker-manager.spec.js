@@ -7,10 +7,16 @@ describe('MarkerManager', function () {
     beforeEach(function () {
         TestBed.configureTestingModule({
             providers: [
-                { provide: NgZone, useFactory: function () { return new NgZone({ enableLongStackTrace: true }); } },
-                MarkerManager, {
+                {
+                    provide: NgZone,
+                    useFactory: function () { return new NgZone({ enableLongStackTrace: true }); }
+                },
+                MarkerManager,
+                {
                     provide: GoogleMapsAPIWrapper,
-                    useValue: jasmine.createSpyObj('GoogleMapsAPIWrapper', ['createMarker'])
+                    useValue: jasmine.createSpyObj('GoogleMapsAPIWrapper', [
+                        'createMarker'
+                    ])
                 }
             ]
         });
@@ -32,7 +38,8 @@ describe('MarkerManager', function () {
                 zIndex: 1,
                 title: undefined,
                 clickable: true,
-                animation: undefined
+                animation: undefined,
+                optimized: true
             });
         }));
     });
@@ -42,10 +49,14 @@ describe('MarkerManager', function () {
             newMarker.latitude = 34.4;
             newMarker.longitude = 22.3;
             newMarker.label = 'A';
-            var markerInstance = jasmine.createSpyObj('Marker', ['setMap']);
+            var markerInstance = jasmine.createSpyObj('Marker', [
+                'setMap'
+            ]);
             apiWrapper.createMarker.and.returnValue(Promise.resolve(markerInstance));
             markerManager.addMarker(newMarker);
-            markerManager.deleteMarker(newMarker).then(function () { expect(markerInstance.setMap).toHaveBeenCalledWith(null); });
+            markerManager.deleteMarker(newMarker).then(function () {
+                expect(markerInstance.setMap).toHaveBeenCalledWith(null);
+            });
         }));
     });
     describe('set marker icon', function () {
@@ -54,7 +65,10 @@ describe('MarkerManager', function () {
             newMarker.latitude = 34.4;
             newMarker.longitude = 22.3;
             newMarker.label = 'A';
-            var markerInstance = jasmine.createSpyObj('Marker', ['setMap', 'setIcon']);
+            var markerInstance = jasmine.createSpyObj('Marker', [
+                'setMap',
+                'setIcon'
+            ]);
             apiWrapper.createMarker.and.returnValue(Promise.resolve(markerInstance));
             markerManager.addMarker(newMarker);
             expect(apiWrapper.createMarker).toHaveBeenCalledWith({
@@ -66,12 +80,15 @@ describe('MarkerManager', function () {
                 visible: true,
                 zIndex: 1,
                 title: undefined,
+                optimized: true,
                 clickable: true,
                 animation: undefined
             });
             var iconUrl = 'http://angular-maps.com/icon.png';
             newMarker.iconUrl = iconUrl;
-            return markerManager.updateIcon(newMarker).then(function () { expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl); });
+            return markerManager.updateIcon(newMarker).then(function () {
+                expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl);
+            });
         })));
     });
     describe('set marker opacity', function () {
@@ -80,7 +97,10 @@ describe('MarkerManager', function () {
             newMarker.latitude = 34.4;
             newMarker.longitude = 22.3;
             newMarker.label = 'A';
-            var markerInstance = jasmine.createSpyObj('Marker', ['setMap', 'setOpacity']);
+            var markerInstance = jasmine.createSpyObj('Marker', [
+                'setMap',
+                'setOpacity'
+            ]);
             apiWrapper.createMarker.and.returnValue(Promise.resolve(markerInstance));
             markerManager.addMarker(newMarker);
             expect(apiWrapper.createMarker).toHaveBeenCalledWith({
@@ -93,11 +113,14 @@ describe('MarkerManager', function () {
                 zIndex: 1,
                 title: undefined,
                 clickable: true,
-                animation: undefined
+                animation: undefined,
+                optimized: true
             });
             var opacity = 0.4;
             newMarker.opacity = opacity;
-            return markerManager.updateOpacity(newMarker).then(function () { expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity); });
+            return markerManager.updateOpacity(newMarker).then(function () {
+                expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity);
+            });
         })));
     });
     describe('set visible option', function () {
@@ -107,7 +130,10 @@ describe('MarkerManager', function () {
             newMarker.longitude = 22.3;
             newMarker.label = 'A';
             newMarker.visible = false;
-            var markerInstance = jasmine.createSpyObj('Marker', ['setMap', 'setVisible']);
+            var markerInstance = jasmine.createSpyObj('Marker', [
+                'setMap',
+                'setVisible'
+            ]);
             apiWrapper.createMarker.and.returnValue(Promise.resolve(markerInstance));
             markerManager.addMarker(newMarker);
             expect(apiWrapper.createMarker).toHaveBeenCalledWith({
@@ -120,10 +146,13 @@ describe('MarkerManager', function () {
                 zIndex: 1,
                 title: undefined,
                 clickable: true,
-                animation: undefined
+                animation: undefined,
+                optimized: true
             });
             newMarker.visible = true;
-            return markerManager.updateVisible(newMarker).then(function () { expect(markerInstance.setVisible).toHaveBeenCalledWith(true); });
+            return markerManager.updateVisible(newMarker).then(function () {
+                expect(markerInstance.setVisible).toHaveBeenCalledWith(true);
+            });
         })));
     });
     describe('set zIndex option', function () {
@@ -133,7 +162,10 @@ describe('MarkerManager', function () {
             newMarker.longitude = 22.3;
             newMarker.label = 'A';
             newMarker.visible = false;
-            var markerInstance = jasmine.createSpyObj('Marker', ['setMap', 'setZIndex']);
+            var markerInstance = jasmine.createSpyObj('Marker', [
+                'setMap',
+                'setZIndex'
+            ]);
             apiWrapper.createMarker.and.returnValue(Promise.resolve(markerInstance));
             markerManager.addMarker(newMarker);
             expect(apiWrapper.createMarker).toHaveBeenCalledWith({
@@ -146,11 +178,14 @@ describe('MarkerManager', function () {
                 zIndex: 1,
                 title: undefined,
                 clickable: true,
-                animation: undefined
+                animation: undefined,
+                optimized: true
             });
             var zIndex = 10;
             newMarker.zIndex = zIndex;
-            return markerManager.updateZIndex(newMarker).then(function () { expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex); });
+            return markerManager.updateZIndex(newMarker).then(function () {
+                expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex);
+            });
         })));
     });
 });

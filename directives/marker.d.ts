@@ -72,6 +72,11 @@ export declare class AgmMarker implements OnDestroy, OnChanges, AfterContentInit
      */
     zIndex: number;
     /**
+     * Marker optimize flag. If it is false then it prevent dublicate rendering.
+     * Default it is true
+     */
+    optimized: boolean;
+    /**
      * If true, the marker can be clicked. Default value is true.
      */
     clickable: boolean;
